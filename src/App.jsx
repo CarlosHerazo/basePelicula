@@ -16,7 +16,7 @@ function App() {
 
   const getMovies = async () => {
     try {
-      const res = await fetch('http://localhost:5000/movies');
+      const res = await fetch('https://caherazopa.pythonanywhere.com/movies');
       const data = await res.json();
       console.log(data);
       setPeliculas(data.results);
@@ -27,7 +27,7 @@ function App() {
 
   const getTendencias = async () => {
     try {
-      const res = await fetch('http://localhost:5000/movies/tendencias');
+      const res = await fetch('https://caherazopa.pythonanywhere.com/movies/tendencias');
       const data = await res.json();
       console.log(data);
       setTendencias(data.results);
