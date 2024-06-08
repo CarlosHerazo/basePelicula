@@ -29,7 +29,7 @@ const MovieBanner = ({ Peliculas }) => {
   const AbrirTrailer = async (idMovie) => {
     console.log(idMovie)
     try {
-      const url = `http://127.0.0.1:5000/moviesVideo/${idMovie}`;
+      const url = `https://caherazopa.pythonanywhere.com/moviesVideo/${idMovie}`;
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',

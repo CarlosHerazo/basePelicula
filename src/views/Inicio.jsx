@@ -15,7 +15,7 @@ function Inicio({ Peliculas }) {
 
   const handleSearchClick = () => {
     if (searchTerm) {
-      fetch(`http://localhost:5000/buscarPelicula/${searchTerm}`)
+      fetch(`https://caherazopa.pythonanywhere.com/buscarPelicula/${searchTerm}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.results!=0) {

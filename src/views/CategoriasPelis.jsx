@@ -11,7 +11,7 @@ export default function CategoriasPelis({ Peliculas }) {
 
     const handleSearch = () => {
         if (generoSeleccionado) {
-            fetch(`http://localhost:5000/categoriaPelicula/${generoSeleccionado}`)
+            fetch(`https://caherazopa.pythonanywhere.com/categoriaPelicula/${generoSeleccionado}`)
                 .then((res) => res.json())
                 .then((data) => {
                     setPeliculas(data.results);
