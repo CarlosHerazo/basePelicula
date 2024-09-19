@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import CategoriasPelis from "./views/CategoriasPelis";
 import Footer from "./components/Footer";
 import DetallesPelis from "./views/DetallesPelis";
-import { createSitemap } from 'react-router-sitemap';
+
 
 function App() {
   const [peliculas, setPeliculas] = useState(null);
@@ -72,27 +72,7 @@ function App() {
     }
   ];
 
-  const routes = [
-    { path: '/', component: Inicio },
-    { path: '/inicio', component: Inicio },
-    { path: '/tendencias', component: Tendencias },
-    { path: '/categorias', component: CategoriasPelis },
-    { path: '/detalle/:id', component: DetallesPelis },
-  ];
 
-  createSitemap({
-    hostname: 'https://peliculashz.vercel.app/',
-    routes,
-  })
-
-    .then((sitemap) => {
-      // Escribe el sitemap en un archivo
-      fs.writeFileSync('../sitemap.xml', sitemap.toString());
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-    
   return (
     <>
       {loading ? (
