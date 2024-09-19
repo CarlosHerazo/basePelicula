@@ -15,7 +15,12 @@ function Inicio({ Peliculas }) {
 
   const handleSearchClick = () => {
     if (searchTerm) {
-      fetch(`https://api.themoviedb.org/3/search/movie?query=${searchTerm}&include_adult=false&language=es&page=1`)
+      fetch(`https://api.themoviedb.org/3/search/movie?query=${searchTerm}&include_adult=false&language=es&page=1`, {
+        headers : {
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68"
+        },
+      })
         .then((res) => res.json())
         .then((data) => {
           if (data.results!=0) {

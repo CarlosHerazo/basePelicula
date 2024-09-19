@@ -14,7 +14,7 @@ export default function DetallesPelis() {
 
     useEffect(() => {
         fetch(`https://api.themoviedb.org/3/movie/${id}?language=es`,{
-            headers = {        
+            headers : {        
                 "accept": "application/json",
                 "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68"
             }
@@ -53,7 +53,7 @@ export default function DetallesPelis() {
         try {
             const url = `https://api.themoviedb.org/3/movie/${idMovie}/videos?language=en-US`;
             const response = await fetch(url, {
-                headers = {        
+                headers : {        
                     "accept": "application/json",
                     "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68"
                 },
