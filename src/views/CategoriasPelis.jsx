@@ -11,7 +11,7 @@ export default function CategoriasPelis({ Peliculas }) {
 
     const handleSearch = () => {
         if (generoSeleccionado) {
-            fetch(`https://caherazopa.pythonanywhere.com/categoriaPelicula/${generoSeleccionado}`)
+            fetch(`https://api.themoviedb.org/3/discover/movie?with_genres=${generoSeleccionado}&language=es&page=1`) 
                 .then((res) => res.json())
                 .then((data) => {
                     setPeliculas(data.results);
