@@ -16,7 +16,12 @@ function App() {
 
   const getMovies = async () => {
     try {
-      const res = await fetch('https://caherazopa.pythonanywhere.com/movies');
+      const res = await fetch('https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=true&language=es&page=1&sort_by=popularity.desc',{
+        headers: {
+          "accept": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68"
+        }
+      });
       const data = await res.json();
       console.log(data);
       setPeliculas(data.results);
@@ -27,7 +32,12 @@ function App() {
 
   const getTendencias = async () => {
     try {
-      const res = await fetch('https://caherazopa.pythonanywhere.com/movies/tendencias');
+      const res = await fetch('https://api.themoviedb.org/3/trending/movie/day?language=en-US',{
+        headers: {
+          "accept": "application/json",
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68"
+        }
+      });
       const data = await res.json();
       console.log(data);
       setTendencias(data.results);
