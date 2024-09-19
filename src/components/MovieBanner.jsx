@@ -27,17 +27,14 @@ const MovieBanner = ({ Peliculas }) => {
   };
 
   const AbrirTrailer = async (idMovie) => {
-    console.log(idMovie)
     try {
-      const url = `https://caherazopa.pythonanywhere.com/moviesVideo/${idMovie}`;
+      const url = `https://api.themoviedb.org/3/movie/${idMovie}/videos?language=en-US`;
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
       const data = await response.json();
-      console.log(data)
-
       let trailerKey = null;
       for (let i = 0; i < data.results.length; i++) {
         if (data.results[i].name.includes("Official Trailer")) {

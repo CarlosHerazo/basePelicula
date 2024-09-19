@@ -13,7 +13,12 @@ export default function DetallesPelis() {
     const [openModal, setOpenModal] = useState(false);
 
     useEffect(() => {
-        fetch(`https://caherazopa.pythonanywhere.com/peliculaDetalle/${id}`)
+        fetch(`https://api.themoviedb.org/3/movie/${id}?language=es`,{
+            headers = {        
+                "accept": "application/json",
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68"
+            }
+        })
             .then((res) => {
                 if (!res.ok) {
                     throw new Error('Failed to fetch');
@@ -46,10 +51,11 @@ export default function DetallesPelis() {
 
     const AbrirTrailer = async (idMovie) => {
         try {
-            const url = `https://caherazopa.pythonanywhere.com/moviesVideo/${idMovie}`;
+            const url = `https://api.themoviedb.org/3/movie/${idMovie}/videos?language=en-US`;
             const response = await fetch(url, {
-                headers: {
-                    'Content-Type': 'application/json',
+                headers = {        
+                    "accept": "application/json",
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68"
                 },
             });
             const data = await response.json();

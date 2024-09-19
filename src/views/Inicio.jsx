@@ -15,7 +15,7 @@ function Inicio({ Peliculas }) {
 
   const handleSearchClick = () => {
     if (searchTerm) {
-      fetch(`https://caherazopa.pythonanywhere.com/buscarPelicula/${searchTerm}`)
+      fetch(`https://api.themoviedb.org/3/search/movie?query=${searchTerm}&include_adult=false&language=es&page=1`)
         .then((res) => res.json())
         .then((data) => {
           if (data.results!=0) {
