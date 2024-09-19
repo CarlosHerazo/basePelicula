@@ -14,6 +14,7 @@
     "@emotion/styled": "^11.11.5",
     "@fontsource/roboto": "^5.0.13",
     "@mui/icons-material": "^5.15.18",
+    "react-router-sitemap": "^x.y.z",
     "@mui/material": "^5.15.18",
     "aos": "^2.3.4",
     "react": "^18.2.0",
