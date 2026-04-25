@@ -1,29 +1,47 @@
 import React from 'react';
-import { CircularProgress, Typography } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 
 export default function RatingCircle({ rating, color, title }) {
-    const ratingPorcentaje = rating * 10;
+  const value = Math.min(rating * 10, 100);
 
-    return (
-        <>
-            <div>
-                {title && <Typography variant="body2">{title}</Typography>}
-            </div>
-            <div style={{ position: 'relative', width: 50, height: 50 }}>
-                <CircularProgress
-                    variant="determinate"
-                    value={ratingPorcentaje}
-                    size={50}
-                    thickness={4}
-                    style={{ position: 'absolute', color: color }}
-                />
-                <Typography
-                    variant="body2"
-                    style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: color }}
-                >
-                    {rating}
-                </Typography>
-            </div>
-        </>
-    );
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+      {title && (
+        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.68rem', textAlign: 'center' }}>
+          {title}
+        </Typography>
+      )}
+      <Box sx={{ position: 'relative', width: 56, height: 56 }}>
+        {/* Background track */}
+        <CircularProgress
+          variant="determinate"
+          value={100}
+          size={56}
+          thickness={3.5}
+          sx={{ position: 'absolute', color: 'rgba(255,255,255,0.08)' }}
+        />
+        {/* Filled arc */}
+        <CircularProgress
+          variant="determinate"
+          value={value}
+          size={56}
+          thickness={3.5}
+          sx={{ position: 'absolute', color }}
+        />
+        <Typography
+          variant="body2"
+          sx={{
+            position: 'absolute',
+            top: '50%', left: '50%',
+            transform: 'translate(-50%, -50%)',
+            color,
+            fontWeight: 700,
+            fontSize: '0.78rem',
+          }}
+        >
+          {typeof rating === 'number' && rating > 0 ? rating.toFixed(1) : '—'}
+        </Typography>
+      </Box>
+    </Box>
+  );
 }

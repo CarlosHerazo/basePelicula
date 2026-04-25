@@ -1,5 +1,216 @@
-.ImgBanner {
-    mask-image: linear-gradient(transparent, #0D0D0D 50%);
+/* ── Variables ── */
+:root {
+  --bg-base: #0D0D0D;
+  --bg-elevated: #161616;
+  --accent: #FFC107;
+  --accent-glow: rgba(255, 193, 7, 0.18);
+  --text-muted: rgba(255, 255, 255, 0.55);
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:   cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #0D0D0D; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 193, 7, 0.3);
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 193, 7, 0.65); }
 
+/* ── Keyframes ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-32px); }
+  to   { opacity: 1; transform: translateX(0);     }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(0.68); }
+  65%  { transform: scale(1.07); }
+  100% { opacity: 1; transform: scale(1);    }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+@keyframes underlineGrow {
+  from { width: 0; opacity: 0; }
+  to   { width: 44px; opacity: 1; }
+}
+
+@keyframes cardFlash {
+  0%   { opacity: 0; transform: scale(0.94); }
+  100% { opacity: 1; transform: scale(1);    }
+}
+
+@keyframes winnerReveal {
+  0%   { opacity: 0; transform: scale(0.8) translateY(20px); }
+  60%  { transform: scale(1.04) translateY(-4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,193,7,0); }
+  50%       { box-shadow: 0 0 40px 12px rgba(255,193,7,0.28); }
+}
+
+@keyframes spinBtn {
+  0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(255,193,7,0); }
+  50%       { transform: scale(1.04); box-shadow: 0 0 28px 8px rgba(255,193,7,0.22); }
+}
+
+@keyframes metricBar {
+  from { width: 0; }
+  to   { width: var(--bar-w); }
+}
+
+@keyframes backdropShift {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ── Page fade on enter ── */
+.page-enter {
+  animation: fadeIn 0.38s var(--ease-spring) both;
+}
+
+/* ── Banner image mask ── */
+.ImgBanner {
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 45%, transparent 100%);
+          mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 45%, transparent 100%);
+}
+
+/* ── Animated banner text ── */
+.banner-content {
+  animation: fadeUp 0.75s var(--ease-spring) both;
+}
+
+/* ── Section title with animated gold underline ── */
+.section-title {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+  margin-bottom: 6px;
+}
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 44px;
+  height: 3px;
+  background: linear-gradient(90deg, #FFC107 0%, transparent 100%);
+  border-radius: 2px;
+  animation: underlineGrow 0.6s var(--ease-out-expo) both 0.1s;
+}
+
+/* ── Skeleton shimmer ── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #161616 25%,
+    #222222 50%,
+    #161616 75%
+  );
+  background-size: 1200px 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* ── Movie card grid ── */
+.movie-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+@media (max-width: 600px) {
+  .movie-card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+}
+
+/* ── Card grid stagger (BlueCard) ── */
+.movie-card-grid > * {
+  animation: fadeUp 0.55s var(--ease-spring) both;
+}
+.movie-card-grid > *:nth-child(1)  { animation-delay: 0.04s; }
+.movie-card-grid > *:nth-child(2)  { animation-delay: 0.08s; }
+.movie-card-grid > *:nth-child(3)  { animation-delay: 0.12s; }
+.movie-card-grid > *:nth-child(4)  { animation-delay: 0.16s; }
+.movie-card-grid > *:nth-child(5)  { animation-delay: 0.20s; }
+.movie-card-grid > *:nth-child(6)  { animation-delay: 0.24s; }
+.movie-card-grid > *:nth-child(7)  { animation-delay: 0.28s; }
+.movie-card-grid > *:nth-child(8)  { animation-delay: 0.32s; }
+.movie-card-grid > *:nth-child(9)  { animation-delay: 0.36s; }
+.movie-card-grid > *:nth-child(10) { animation-delay: 0.40s; }
+.movie-card-grid > *:nth-child(11) { animation-delay: 0.44s; }
+.movie-card-grid > *:nth-child(12) { animation-delay: 0.48s; }
+.movie-card-grid > *:nth-child(n+13){ animation-delay: 0.52s; }
+
+/* ── Horizontal row stagger ── */
+.row-stagger > * {
+  animation: slideInRight 0.45s var(--ease-spring) both;
+}
+.row-stagger > *:nth-child(1)   { animation-delay: 0.04s; }
+.row-stagger > *:nth-child(2)   { animation-delay: 0.08s; }
+.row-stagger > *:nth-child(3)   { animation-delay: 0.12s; }
+.row-stagger > *:nth-child(4)   { animation-delay: 0.16s; }
+.row-stagger > *:nth-child(5)   { animation-delay: 0.20s; }
+.row-stagger > *:nth-child(6)   { animation-delay: 0.24s; }
+.row-stagger > *:nth-child(7)   { animation-delay: 0.28s; }
+.row-stagger > *:nth-child(8)   { animation-delay: 0.32s; }
+.row-stagger > *:nth-child(n+9) { animation-delay: 0.36s; }
+
+/* ── Avatar pop-in stagger ── */
+.avatar-stagger > * {
+  animation: popIn 0.5s var(--ease-spring) both;
+}
+.avatar-stagger > *:nth-child(1)   { animation-delay: 0.05s; }
+.avatar-stagger > *:nth-child(2)   { animation-delay: 0.10s; }
+.avatar-stagger > *:nth-child(3)   { animation-delay: 0.15s; }
+.avatar-stagger > *:nth-child(4)   { animation-delay: 0.20s; }
+.avatar-stagger > *:nth-child(5)   { animation-delay: 0.25s; }
+.avatar-stagger > *:nth-child(6)   { animation-delay: 0.30s; }
+.avatar-stagger > *:nth-child(7)   { animation-delay: 0.35s; }
+.avatar-stagger > *:nth-child(8)   { animation-delay: 0.40s; }
+.avatar-stagger > *:nth-child(n+9) { animation-delay: 0.44s; }
+
+/* ── Scale stagger (mood cards, collection grid) ── */
+.scale-stagger > * {
+  animation: scaleIn 0.45s var(--ease-spring) both;
+}
+.scale-stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.scale-stagger > *:nth-child(2) { animation-delay: 0.09s; }
+.scale-stagger > *:nth-child(3) { animation-delay: 0.14s; }
+.scale-stagger > *:nth-child(4) { animation-delay: 0.19s; }
+.scale-stagger > *:nth-child(5) { animation-delay: 0.24s; }
+.scale-stagger > *:nth-child(6) { animation-delay: 0.29s; }
+.scale-stagger > *:nth-child(7) { animation-delay: 0.34s; }
+.scale-stagger > *:nth-child(8) { animation-delay: 0.39s; }
+.scale-stagger > *:nth-child(9) { animation-delay: 0.44s; }
+.scale-stagger > *:nth-child(n+10){ animation-delay: 0.48s; }

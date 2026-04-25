@@ -1,49 +1,53 @@
 import React, { useState } from 'react';
-import { Select, MenuItem } from '@mui/material';
+import { Select, MenuItem, FormControl } from '@mui/material';
+
+const generos = {
+  "Acción":          28,
+  "Aventura":        12,
+  "Animación":       16,
+  "Comedia":         35,
+  "Crimen":          80,
+  "Drama":           18,
+  "Familia":         10751,
+  "Fantasía":        14,
+  "Terror":          27,
+  "Misterio":        9648,
+  "Romance":         10749,
+  "Ciencia ficción": 878,
+};
 
 function SelectionP({ onSelectChange }) {
-    const [generoSeleccionado, setGeneroSeleccionado] = useState('');
+  const [value, setValue] = useState('');
 
-    const handleSelectChange = (event) => {
-        setGeneroSeleccionado(event.target.value);
-        onSelectChange(event); // Llama a la función onSelectChange con el evento para manejar los cambios de selección en el componente padre
-    };
+  const handleChange = (e) => {
+    setValue(e.target.value);
+    onSelectChange(e);
+  };
 
-    const generos = {
-        "Acción": 28,
-        "Aventura": 12,
-        "Animación": 16,
-        "Comedia": 35,
-        "Crimen": 80,
-        "Drama": 18,
-        "Familia": 10751,
-        "Fantasía": 14,
-        "Terror": 27,
-        "Misterio": 9648,
-        "Romance": 10749,
-        "Ciencia ficción": 878,
-    };
-
-    return (
-        <Select
-            value={generoSeleccionado}
-            onChange={handleSelectChange}
-            variant="outlined"
-            style={{
-                minWidth: 200,
-                '&:hover': {
-                    color: 'black' // Cambiar el color del texto al pasar el ratón por encima
-                }
-            }}
-        >
-            <MenuItem value="">Selecciona un género</MenuItem>
-            {Object.keys(generos).map((genero) => (
-                <MenuItem key={genero} value={generos[genero]}>
-                    {genero}
-                </MenuItem>
-            ))}
-        </Select>
-    );
+  return (
+    <FormControl size="small" sx={{ minWidth: 200 }}>
+      <Select
+        value={value}
+        onChange={handleChange}
+        displayEmpty
+        sx={{
+          color: value ? '#fff' : 'rgba(255,255,255,0.4)',
+          bgcolor: '#161616',
+          fontSize: '0.9rem',
+          '& .MuiSelect-icon': { color: 'rgba(255,193,7,0.7)' },
+        }}
+      >
+        <MenuItem value="" disabled sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem' }}>
+          Selecciona un género
+        </MenuItem>
+        {Object.entries(generos).map(([nombre, id]) => (
+          <MenuItem key={id} value={id} sx={{ fontSize: '0.9rem' }}>
+            {nombre}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
 }
 
 export default SelectionP;
