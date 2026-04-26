@@ -1,38 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, CircularProgress, Tooltip } from '@mui/material';
-import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
-import SearchOffIcon     from '@mui/icons-material/SearchOff';
-import OpenInNewIcon     from '@mui/icons-material/OpenInNew';
-import InfoOutlinedIcon  from '@mui/icons-material/InfoOutlined';
+import OndemandVideoIcon  from '@mui/icons-material/OndemandVideo';
+import PlayCircleIcon     from '@mui/icons-material/PlayCircle';
+import SearchOffIcon      from '@mui/icons-material/SearchOff';
+import OpenInNewIcon      from '@mui/icons-material/OpenInNew';
+import InfoOutlinedIcon   from '@mui/icons-material/InfoOutlined';
 
-const SOURCES = [
-  { key: 'archive', label: 'Internet Archive', color: '#4CAF50' },
-  { key: 'youtube', label: 'YouTube',          color: '#E53935' },
-];
+const FREE_PLATFORMS = (title, year) => {
+  const q   = encodeURIComponent(`${title} ${year ?? ''} pelicula completa gratis`);
+  const qEn = encodeURIComponent(`${title} ${year ?? ''} full movie free`);
+  return [
+    { label: 'YouTube',  color: '#E53935', bg: 'rgba(229,57,53,0.08)',   url: `https://www.youtube.com/results?search_query=${q}`,              note: 'buscar' },
+    { label: 'Tubi',     color: '#FA5A00', bg: 'rgba(250,90,0,0.08)',    url: `https://tubitv.com/search/${encodeURIComponent(title)}`,          note: 'gratis' },
+    { label: 'Pluto TV', color: '#00B4D8', bg: 'rgba(0,180,216,0.08)',   url: `https://pluto.tv/search#${encodeURIComponent(title)}`,            note: 'gratis' },
+    { label: 'Crackle',  color: '#FF6600', bg: 'rgba(255,102,0,0.08)',   url: `https://www.crackle.com/search?q=${encodeURIComponent(title)}`,   note: 'gratis' },
+    { label: 'Plex',     color: '#E5A00D', bg: 'rgba(229,160,13,0.08)',  url: `https://watch.plex.tv/search?q=${encodeURIComponent(title)}`,     note: 'gratis' },
+  ];
+};
 
 export default function WatchMovie({ movieTitle, year }) {
-  const [source,       setSource]       = useState('archive');
   const [archiveId,    setArchiveId]    = useState(null);
   const [archiveFound, setArchiveFound] = useState(null); // null=loading, true, false
-  const [expanded,     setExpanded]     = useState(false);
+  const [playerOpen,   setPlayerOpen]   = useState(false);
 
   useEffect(() => {
     if (!movieTitle) return;
     setArchiveId(null);
     setArchiveFound(null);
+    setPlayerOpen(false);
 
-    // Search Archive.org — runtime:[3600 TO *] ensures full-length films only (≥60 min)
-    const base  = `"${movieTitle}" AND mediatype:movies AND runtime:[3600 TO *]`;
-    const q     = encodeURIComponent(base);
-    fetch(`https://archive.org/advancedsearch.php?q=${q}&fl[]=identifier&fl[]=title&fl[]=year&fl[]=runtime&rows=12&output=json`)
+    // Buscar en Archive.org sin filtro de runtime (formato inconsistente)
+    const q = encodeURIComponent(`${movieTitle} AND mediatype:movies`);
+    fetch(`https://archive.org/advancedsearch.php?q=${q}&fl[]=identifier&fl[]=title&fl[]=year&rows=15&output=json`)
       .then(r => r.json())
       .then(data => {
-        const docs = (data.response?.docs ?? []).filter(d => Number(d.runtime) >= 3600);
-        let best = docs[0] ?? null;
-        // Prefer exact year match
-        if (year && docs.length > 1) {
-          const match = docs.find(d => String(d.year) === String(year));
-          if (match) best = match;
+        const docs = data.response?.docs ?? [];
+        // Preferir coincidencia exacta de año
+        let best = null;
+        if (year && docs.length > 0) {
+          best = docs.find(d => String(d.year) === String(year)) ?? docs[0];
+        } else {
+          best = docs[0] ?? null;
         }
         if (best?.identifier) { setArchiveId(best.identifier); setArchiveFound(true); }
         else setArchiveFound(false);
@@ -40,156 +48,130 @@ export default function WatchMovie({ movieTitle, year }) {
       .catch(() => setArchiveFound(false));
   }, [movieTitle, year]);
 
-  const ytQuery  = encodeURIComponent(`${movieTitle} ${year ?? ''} pelicula completa gratis`);
-  const ytSearch = `https://www.youtube.com/results?search_query=${ytQuery}`;
-  const ytEmbed  = `https://www.youtube.com/embed?listType=search&list=${ytQuery}&hl=es&rel=0`;
+  const platforms = FREE_PLATFORMS(movieTitle, year);
 
   return (
     <Box sx={{ mt: 6 }}>
-      {/* ── Header ── */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+
+      {/* ── Título sección ── */}
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2.5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <OndemandVideoIcon sx={{ color: '#FFC107', fontSize: 18 }} />
           <Typography className="section-title"
             sx={{ fontSize: '1rem', fontWeight: 700, color: '#fff', letterSpacing: '-0.2px' }}>
             Ver película gratis
           </Typography>
+          {archiveFound === null && <CircularProgress size={11} sx={{ color: 'rgba(255,255,255,0.25)', ml: 0.5 }} />}
         </Box>
-        <Tooltip title="El contenido proviene de plataformas externas. Solo mostramos lo que está disponible públicamente en esos servicios.">
-          <InfoOutlinedIcon sx={{ fontSize: 16, color: 'rgba(255,255,255,0.22)', cursor: 'help' }} />
+        <Tooltip title="Contenido de plataformas externas. La disponibilidad varía por región y título.">
+          <InfoOutlinedIcon sx={{ fontSize: 15, color: 'rgba(255,255,255,0.2)', cursor: 'help' }} />
         </Tooltip>
       </Box>
 
-      {/* ── Source selector ── */}
-      <Box sx={{ display: 'flex', gap: 1, mb: 2.5, flexWrap: 'wrap' }}>
-        {SOURCES.map(s => {
-          const active = source === s.key;
-          return (
+      {/* ── Internet Archive ── */}
+      {archiveFound === true && archiveId && (
+        <Box sx={{ mb: 3 }}>
+          {!playerOpen ? (
             <Box
-              key={s.key}
-              onClick={() => { setSource(s.key); setExpanded(true); }}
+              onClick={() => setPlayerOpen(true)}
               sx={{
-                display: 'flex', alignItems: 'center', gap: 0.8,
-                px: 2, py: 0.9, borderRadius: '8px', cursor: 'pointer',
-                border: `1px solid ${active ? s.color : 'rgba(255,255,255,0.1)'}`,
-                bgcolor: active ? `${s.color}18` : 'rgba(255,255,255,0.04)',
-                transition: 'all 0.2s',
-                '&:hover': { borderColor: s.color, bgcolor: `${s.color}12` },
+                display: 'flex', alignItems: 'center', gap: 2,
+                p: 2, borderRadius: '12px', cursor: 'pointer',
+                border: '1px solid rgba(76,175,80,0.35)',
+                bgcolor: 'rgba(76,175,80,0.07)',
+                transition: 'all 0.22s',
+                '&:hover': { bgcolor: 'rgba(76,175,80,0.13)', borderColor: 'rgba(76,175,80,0.65)', transform: 'translateY(-2px)' },
               }}
             >
-              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: active ? s.color : 'rgba(255,255,255,0.25)', transition: 'background 0.2s' }} />
-              <Typography sx={{ fontSize: '0.78rem', fontWeight: active ? 700 : 400, color: active ? '#fff' : 'rgba(255,255,255,0.5)', transition: 'color 0.2s' }}>
-                {s.label}
-              </Typography>
-              {s.key === 'archive' && archiveFound === true  && <Box sx={{ fontSize: '0.6rem', color: '#4CAF50', fontWeight: 700 }}>✓ disponible</Box>}
-              {s.key === 'archive' && archiveFound === false  && <Box sx={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)' }}>no encontrada</Box>}
-              {s.key === 'archive' && archiveFound === null   && <CircularProgress size={10} sx={{ color: 'rgba(255,255,255,0.3)' }} />}
+              <PlayCircleIcon sx={{ color: '#4CAF50', fontSize: 30, flexShrink: 0 }} />
+              <Box>
+                <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: '#4CAF50', lineHeight: 1.2 }}>
+                  Encontrada en Internet Archive
+                </Typography>
+                <Typography sx={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.38)', mt: 0.2 }}>
+                  Clic para abrir el reproductor
+                </Typography>
+              </Box>
             </Box>
-          );
-        })}
-
-        {!expanded && (
-          <Box
-            onClick={() => setExpanded(true)}
-            sx={{ px: 2, py: 0.9, borderRadius: '8px', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.08)', bgcolor: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', transition: 'all 0.2s', '&:hover': { borderColor: '#FFC107', bgcolor: 'rgba(255,193,7,0.06)' } }}
-          >
-            <Typography sx={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)' }}>Mostrar player</Typography>
-          </Box>
-        )}
-      </Box>
-
-      {/* ── Player ── */}
-      {expanded && (
-        <Box sx={{ animation: 'fadeUp 0.4s var(--ease-spring) both' }}>
-
-          {/* ─ Internet Archive ─ */}
-          {source === 'archive' && (
-            <>
-              {archiveFound === null && (
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <CircularProgress color="warning" size={32} thickness={3} />
-                </Box>
-              )}
-
-              {archiveFound === true && archiveId && (
-                <>
-                  <Box sx={{ position: 'relative', paddingTop: '56.25%', borderRadius: '12px', overflow: 'hidden', bgcolor: '#000', boxShadow: '0 16px 48px rgba(0,0,0,0.6)' }}>
-                    <Box
-                      component="iframe"
-                      key={archiveId}
-                      src={`https://archive.org/embed/${archiveId}?autoplay=0`}
-                      title={movieTitle}
-                      allowFullScreen
-                      allow="fullscreen"
-                      sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-                    />
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1, px: 0.5 }}>
-                    <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.22)' }}>
-                      Fuente: Internet Archive (archive.org) — contenido de dominio público o libre distribución
-                    </Typography>
-                    <Button
-                      href={`https://archive.org/details/${archiveId}`}
-                      target="_blank" rel="noopener noreferrer"
-                      size="small" endIcon={<OpenInNewIcon sx={{ fontSize: 12 }} />}
-                      sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.65rem', minWidth: 0, '&:hover': { color: '#4CAF50' } }}
-                    >
-                      Ver en Archive.org
-                    </Button>
-                  </Box>
-                </>
-              )}
-
-              {archiveFound === false && (
-                <Box sx={{ textAlign: 'center', py: 5, borderRadius: '12px', bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <SearchOffIcon sx={{ fontSize: 38, color: 'rgba(255,255,255,0.15)', mb: 1 }} />
-                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', mb: 2 }}>
-                    No encontrada en Internet Archive
-                  </Typography>
-                  <Button
-                    href={`https://archive.org/search?query=${encodeURIComponent(movieTitle)}&and[]=mediatype%3A%22movies%22`}
-                    target="_blank" rel="noopener noreferrer"
-                    variant="outlined" size="small" endIcon={<OpenInNewIcon sx={{ fontSize: 13 }} />}
-                    sx={{ borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.45)', fontSize: '0.75rem', '&:hover': { borderColor: '#4CAF50', color: '#4CAF50' } }}
-                  >
-                    Buscar manualmente
-                  </Button>
-                </Box>
-              )}
-            </>
-          )}
-
-          {/* ─ YouTube ─ */}
-          {source === 'youtube' && (
-            <>
-              <Box sx={{ position: 'relative', paddingTop: '56.25%', borderRadius: '12px', overflow: 'hidden', bgcolor: '#000', boxShadow: '0 16px 48px rgba(0,0,0,0.6)' }}>
+          ) : (
+            <Box>
+              <Box sx={{
+                position: 'relative', paddingTop: '56.25%',
+                borderRadius: '12px', overflow: 'hidden',
+                bgcolor: '#000', boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
+              }}>
                 <Box
                   component="iframe"
-                  key={ytEmbed}
-                  src={ytEmbed}
-                  title={`${movieTitle} — YouTube`}
+                  key={archiveId}
+                  src={`https://archive.org/embed/${archiveId}?autoplay=0`}
+                  title={movieTitle}
                   allowFullScreen
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allow="fullscreen"
                   sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
                 />
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 1, px: 0.5 }}>
-                <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.22)' }}>
-                  Resultados de búsqueda en YouTube — la disponibilidad varía según el país
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1, px: 0.5 }}>
+                <Typography sx={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.2)' }}>
+                  Internet Archive · dominio público / libre distribución
                 </Typography>
                 <Button
-                  href={ytSearch} target="_blank" rel="noopener noreferrer"
-                  size="small" endIcon={<OpenInNewIcon sx={{ fontSize: 12 }} />}
-                  sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.65rem', minWidth: 0, '&:hover': { color: '#E53935' } }}
+                  href={`https://archive.org/details/${archiveId}`}
+                  target="_blank" rel="noopener noreferrer"
+                  size="small" endIcon={<OpenInNewIcon sx={{ fontSize: 11 }} />}
+                  sx={{ color: 'rgba(255,255,255,0.28)', fontSize: '0.62rem', minWidth: 0, '&:hover': { color: '#4CAF50' } }}
                 >
-                  Abrir en YouTube
+                  Ver en Archive.org
                 </Button>
               </Box>
-            </>
+            </Box>
           )}
-
         </Box>
       )}
+
+      {archiveFound === false && (
+        <Box sx={{
+          display: 'flex', alignItems: 'center', gap: 1,
+          mb: 2.5, px: 1.5, py: 1.2, borderRadius: '8px',
+          bgcolor: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.05)',
+        }}>
+          <SearchOffIcon sx={{ fontSize: 16, color: 'rgba(255,255,255,0.2)', flexShrink: 0 }} />
+          <Typography sx={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.28)' }}>
+            No disponible en Internet Archive — busca en las plataformas gratuitas de abajo
+          </Typography>
+        </Box>
+      )}
+
+      {/* ── Plataformas gratuitas ── */}
+      <Typography sx={{ fontSize: '0.6rem', fontWeight: 700, color: 'rgba(255,255,255,0.25)', letterSpacing: '1.8px', mb: 1.2 }}>
+        BUSCAR EN PLATAFORMAS GRATUITAS
+      </Typography>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+        {platforms.map(p => (
+          <Button
+            key={p.label}
+            href={p.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            endIcon={<OpenInNewIcon sx={{ fontSize: 11 }} />}
+            sx={{
+              px: 1.8, py: 0.75, borderRadius: '8px', textTransform: 'none',
+              border: `1px solid ${p.color}33`, bgcolor: p.bg, color: p.color,
+              fontSize: '0.75rem', fontWeight: 600,
+              transition: 'all 0.2s',
+              '&:hover': { bgcolor: `${p.color}20`, borderColor: `${p.color}77`, transform: 'translateY(-1px)' },
+            }}
+          >
+            {p.label}
+            <Box component="span" sx={{ ml: 0.7, fontSize: '0.58rem', color: 'rgba(255,255,255,0.3)', fontWeight: 400 }}>
+              {p.note}
+            </Box>
+          </Button>
+        ))}
+      </Box>
+
+      <Typography sx={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.18)', mt: 1.2 }}>
+        La disponibilidad depende de tu país y del título. Algunas plataformas requieren registro gratuito.
+      </Typography>
     </Box>
   );
 }
