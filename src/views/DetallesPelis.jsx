@@ -7,7 +7,11 @@ import {
 } from '@mui/material';
 import RatingCircle  from '../components/RatingCircle';
 import MovieRow      from '../components/MovieRow';
-import TrailerModal  from '../components/TrailerYoutube';
+import TrailerModal    from '../components/TrailerYoutube';
+import WatchMovie      from '../components/WatchMovie';
+import WhereToWatch    from '../components/WhereToWatch';
+import MovieDashboard  from '../components/MovieDashboard';
+import WikiTrivia      from '../components/WikiTrivia';
 import MovieIcon          from '@mui/icons-material/Movie';
 import LinkIcon           from '@mui/icons-material/OpenInNew';
 import FavoriteIcon       from '@mui/icons-material/Favorite';
@@ -171,9 +175,9 @@ export default function DetallesPelis() {
 
       {/* ── Content ── */}
       <Container maxWidth="xl" className="page-enter" sx={{ py: { xs: 3, md: 5 } }}>
-        <Grid container spacing={{ xs: 3, md: 5 }}>
+        <Grid container spacing={{ xs: 3, md: 4 }}>
 
-          {/* Poster */}
+          {/* ── Poster ── */}
           <Grid item xs={12} sm={4} md={3} lg={2.5}>
             <Box sx={{ mt: { sm: 0, md: '-70px' }, position: 'relative', zIndex: 2 }}>
               <Box
@@ -191,8 +195,8 @@ export default function DetallesPelis() {
             </Box>
           </Grid>
 
-          {/* Details */}
-          <Grid item xs={12} sm={8} md={9} lg={9.5}>
+          {/* ── Details ── */}
+          <Grid item xs={12} sm={8} md={5.5} lg={6}>
 
             {/* Overview */}
             <Typography sx={{ color: 'rgba(255,255,255,0.75)', lineHeight: 1.75, fontSize: '0.97rem', mb: 3 }}>
@@ -325,8 +329,21 @@ export default function DetallesPelis() {
                 </IconButton>
               </Tooltip>
             </Box>
+
+            {/* Dónde ver */}
+            <WhereToWatch movieId={pelicula.id} movieTitle={pelicula.title} />
+          </Grid>
+
+          {/* ── Dashboard ── */}
+          <Grid item xs={12} md={3.5} lg={3.5}>
+            <Box sx={{ mt: { md: 0 }, pt: { xs: 0, md: 1 } }}>
+              <MovieDashboard movie={pelicula} movieId={pelicula.id} />
+            </Box>
           </Grid>
         </Grid>
+
+        {/* ── Wikipedia ── */}
+        <WikiTrivia movieTitle={pelicula.title} />
 
         {/* ── Similar movies ── */}
         {similares.length > 0 && (
@@ -338,6 +355,12 @@ export default function DetallesPelis() {
             />
           </Box>
         )}
+
+        {/* ── Ver película gratis ── */}
+        <WatchMovie
+          movieTitle={pelicula.title}
+          year={pelicula.release_date?.slice(0, 4)}
+        />
       </Container>
 
       <TrailerModal

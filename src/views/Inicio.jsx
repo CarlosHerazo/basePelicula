@@ -28,6 +28,7 @@ import TrendingActors       from '../components/TrendingActors';
 import CollectionRow        from '../components/CollectionRow';
 import MoodRow              from '../components/MoodRow';
 import AnimReveal           from '../components/AnimReveal';
+import CineStats            from '../components/CineStats';
 
 const API_TOKEN = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68";
 const HEADERS  = { 'Content-Type': 'application/json', Authorization: API_TOKEN };
@@ -211,6 +212,11 @@ function Inicio({ Peliculas }) {
                 );
               })}
             </Box>
+          </AnimReveal>
+
+          {/* ── En números ── */}
+          <AnimReveal delay={40}>
+            <CineStats Peliculas={allMovies} />
           </AnimReveal>
 
           {/* ── Ahora en cines ── */}

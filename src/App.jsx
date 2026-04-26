@@ -12,6 +12,7 @@ import Favoritos         from "./views/Favoritos";
 import Colecciones       from "./views/Colecciones";
 import DetalleColeccion  from "./views/DetalleColeccion";
 import Ruleta            from "./views/Ruleta";
+import Metricas          from "./views/Metricas";
 import BackToTop         from "./components/BackToTop";
 
 const API_TOKEN = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68";
@@ -23,6 +24,7 @@ const navList = [
   { title: "Categorias",   path: "categorias"   },
   { title: "Colecciones",  path: "colecciones"  },
   { title: "Ruleta",       path: "ruleta"       },
+  { title: "Métricas",     path: "metricas"     },
   { title: "Favoritos",    path: "favoritos"    },
 ];
 
@@ -32,8 +34,9 @@ function AppContent({ peliculas, tendencias }) {
   const isFavPage     = location.pathname.startsWith('/favoritos');
   const isColecciones = location.pathname.startsWith('/colecciones');
   const isRuleta      = location.pathname.startsWith('/ruleta');
+  const isMetricas    = location.pathname.startsWith('/metricas');
 
-  const hideBanner = isDetail || isFavPage || isColecciones || isRuleta;
+  const hideBanner = isDetail || isFavPage || isColecciones || isRuleta || isMetricas;
 
   return (
     <>
@@ -57,6 +60,7 @@ function AppContent({ peliculas, tendencias }) {
         <Route path="/colecciones"       element={<Colecciones />} />
         <Route path="/colecciones/:id"   element={<DetalleColeccion />} />
         <Route path="/ruleta"            element={<Ruleta />} />
+        <Route path="/metricas"          element={<Metricas />} />
       </Routes>
 
       <Footer />
