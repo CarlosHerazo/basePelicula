@@ -1,9 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { useFav } from '../context/FavoritesContext';
+import FavoriteIcon            from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon      from '@mui/icons-material/FavoriteBorder';
+import BookmarkAddedIcon        from '@mui/icons-material/BookmarkAdded';
+import CheckCircleIcon          from '@mui/icons-material/CheckCircle';
+import { useFav }              from '../context/FavoritesContext';
+import { useWatchlist }        from '../context/WatchlistContext';
 
 const ratingColor = (r) => {
   if (r >= 7) return '#4CAF50';
@@ -13,14 +16,16 @@ const ratingColor = (r) => {
 
 export default function BlueCard({ Peliculas }) {
   const navigate = useNavigate();
-  const { isFav, toggle } = useFav();
+  const { isFav, toggle }  = useFav();
+  const { getStatus }      = useWatchlist();
 
   if (!Peliculas?.length) return null;
 
   return (
     <div className="movie-card-grid">
       {Peliculas.map((pelicula) => {
-        const favored = isFav(pelicula.id);
+        const favored  = isFav(pelicula.id);
+        const wlStatus = getStatus(pelicula.id);
 
         return (
           <Box
@@ -84,6 +89,22 @@ export default function BlueCard({ Peliculas }) {
                 {pelicula.title}
               </Typography>
             </Box>
+
+            {/* Watchlist badge */}
+            {wlStatus && (
+              <Box sx={{
+                position: 'absolute', top: 8, left: 8, zIndex: 3,
+                bgcolor: wlStatus === 'vista' ? 'rgba(76,175,80,0.88)' : 'rgba(255,193,7,0.88)',
+                backdropFilter: 'blur(6px)',
+                borderRadius: '50%', width: 26, height: 26,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                {wlStatus === 'vista'
+                  ? <CheckCircleIcon    sx={{ fontSize: 14, color: '#fff' }} />
+                  : <BookmarkAddedIcon  sx={{ fontSize: 14, color: '#000' }} />
+                }
+              </Box>
+            )}
 
             {/* Heart button */}
             <Box

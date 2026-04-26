@@ -11,7 +11,8 @@ import "@fontsource/roboto/700.css";
 import { CssBaseline } from '@mui/material'
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { BrowserRouter } from "react-router-dom"
-import { FavoritesProvider } from './context/FavoritesContext'
+import { FavoritesProvider }  from './context/FavoritesContext'
+import { WatchlistProvider } from './context/WatchlistContext'
 
 const theme = createTheme({
   palette: {
@@ -114,12 +115,18 @@ const theme = createTheme({
   },
 });
 
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <ThemeProvider theme={theme}>
     <BrowserRouter>
       <FavoritesProvider>
-        <CssBaseline />
-        <App />
+        <WatchlistProvider>
+          <CssBaseline />
+          <App />
+        </WatchlistProvider>
       </FavoritesProvider>
     </BrowserRouter>
   </ThemeProvider>,

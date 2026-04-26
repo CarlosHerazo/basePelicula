@@ -13,6 +13,8 @@ import Colecciones       from "./views/Colecciones";
 import DetalleColeccion  from "./views/DetalleColeccion";
 import Ruleta            from "./views/Ruleta";
 import Metricas          from "./views/Metricas";
+import Comparador        from "./views/Comparador";
+import Persona           from "./views/Persona";
 import BackToTop         from "./components/BackToTop";
 
 const API_TOKEN = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68";
@@ -25,6 +27,7 @@ const navList = [
   { title: "Colecciones",  path: "colecciones"  },
   { title: "Ruleta",       path: "ruleta"       },
   { title: "Métricas",     path: "metricas"     },
+  { title: "Comparar",     path: "comparar"     },
   { title: "Favoritos",    path: "favoritos"    },
 ];
 
@@ -35,8 +38,10 @@ function AppContent({ peliculas, tendencias }) {
   const isColecciones = location.pathname.startsWith('/colecciones');
   const isRuleta      = location.pathname.startsWith('/ruleta');
   const isMetricas    = location.pathname.startsWith('/metricas');
+  const isComparar    = location.pathname.startsWith('/comparar');
+  const isPersona     = location.pathname.startsWith('/persona');
 
-  const hideBanner = isDetail || isFavPage || isColecciones || isRuleta || isMetricas;
+  const hideBanner = isDetail || isFavPage || isColecciones || isRuleta || isMetricas || isComparar || isPersona;
 
   return (
     <>
@@ -61,6 +66,8 @@ function AppContent({ peliculas, tendencias }) {
         <Route path="/colecciones/:id"   element={<DetalleColeccion />} />
         <Route path="/ruleta"            element={<Ruleta />} />
         <Route path="/metricas"          element={<Metricas />} />
+        <Route path="/comparar"          element={<Comparador />} />
+        <Route path="/persona/:id"       element={<Persona />} />
       </Routes>
 
       <Footer />

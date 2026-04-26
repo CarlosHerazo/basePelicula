@@ -12,6 +12,14 @@ import WatchMovie      from '../components/WatchMovie';
 import WhereToWatch    from '../components/WhereToWatch';
 import MovieDashboard  from '../components/MovieDashboard';
 import WikiTrivia      from '../components/WikiTrivia';
+import ShareCard       from '../components/ShareCard';
+import { useWatchlist } from '../context/WatchlistContext';
+import BookmarkAddOutlinedIcon    from '@mui/icons-material/BookmarkAddOutlined';
+import BookmarkAddedIcon          from '@mui/icons-material/BookmarkAdded';
+import CheckCircleOutlineIcon     from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleIcon            from '@mui/icons-material/CheckCircle';
+import IosShareIcon               from '@mui/icons-material/IosShare';
+import CompareArrowsIcon          from '@mui/icons-material/CompareArrows';
 import MovieIcon          from '@mui/icons-material/Movie';
 import LinkIcon           from '@mui/icons-material/OpenInNew';
 import FavoriteIcon       from '@mui/icons-material/Favorite';
@@ -49,6 +57,8 @@ export default function DetallesPelis() {
   const [similares, setSimilares] = useState([]);
   const [error,     setError]     = useState(null);
   const [openModal,  setOpenModal]  = useState(false);
+  const [openShare,  setOpenShare]  = useState(false);
+  const { getStatus, setStatus } = useWatchlist();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -106,7 +116,10 @@ export default function DetallesPelis() {
     </Box>
   );
 
-  const favored = isFav(pelicula.id);
+  const favored      = isFav(pelicula.id);
+  const wlStatus     = getStatus(pelicula.id);
+  const isPendiente  = wlStatus === 'pendiente';
+  const isVista      = wlStatus === 'vista';
 
   return (
     <>
@@ -215,19 +228,18 @@ export default function DetallesPelis() {
                   '&::-webkit-scrollbar-thumb': { background: 'rgba(255,193,7,0.25)', borderRadius: 2 },
                 }}>
                   {cast.map(actor => (
-                    <Box key={actor.id} sx={{ minWidth: 72, textAlign: 'center', flexShrink: 0 }}>
+                    <Box key={actor.id} onClick={() => navigate(`/persona/${actor.id}`)}
+                      sx={{ minWidth: 72, textAlign: 'center', flexShrink: 0, cursor: 'pointer',
+                        '&:hover .actor-avatar': { borderColor: '#FFC107', transform: 'scale(1.07)' },
+                        '&:hover .actor-name': { color: '#FFC107' } }}>
                       <Avatar
+                        className="actor-avatar"
                         src={actor.profile_path ? `https://image.tmdb.org/t/p/w185${actor.profile_path}` : undefined}
-                        sx={{
-                          width: 62, height: 62, mx: 'auto', mb: 0.75,
-                          border: '2px solid rgba(255,255,255,0.1)',
-                          bgcolor: '#2a2a2a',
-                          fontSize: '1.2rem',
-                        }}
+                        sx={{ width: 62, height: 62, mx: 'auto', mb: 0.75, border: '2px solid rgba(255,255,255,0.1)', bgcolor: '#2a2a2a', fontSize: '1.2rem', transition: 'border-color 0.2s, transform 0.2s' }}
                       >
                         {actor.name[0]}
                       </Avatar>
-                      <Typography sx={{ fontSize: '0.68rem', fontWeight: 600, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2, mb: 0.25 }}>
+                      <Typography className="actor-name" sx={{ fontSize: '0.68rem', fontWeight: 600, color: 'rgba(255,255,255,0.8)', lineHeight: 1.2, mb: 0.25, transition: 'color 0.2s' }}>
                         {actor.name}
                       </Typography>
                       <Typography sx={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.38)', lineHeight: 1.2 }}>
@@ -315,17 +327,32 @@ export default function DetallesPelis() {
               </Button>
 
               <Tooltip title={favored ? 'Quitar de favoritos' : 'Agregar a favoritos'}>
-                <IconButton
-                  onClick={() => toggle(pelicula)}
-                  sx={{
-                    color: favored ? '#E50914' : 'rgba(255,255,255,0.35)',
-                    border: `1px solid ${favored ? 'rgba(229,9,20,0.4)' : 'rgba(255,255,255,0.12)'}`,
-                    borderRadius: '8px', p: 1.2,
-                    '&:hover': { color: '#E50914', borderColor: 'rgba(229,9,20,0.5)', bgcolor: 'rgba(229,9,20,0.08)', transform: 'scale(1.07)' },
-                    transition: 'all 0.2s',
-                  }}
-                >
+                <IconButton onClick={() => toggle(pelicula)} sx={{ color: favored ? '#E50914' : 'rgba(255,255,255,0.35)', border: `1px solid ${favored ? 'rgba(229,9,20,0.4)' : 'rgba(255,255,255,0.12)'}`, borderRadius: '8px', p: 1.2, '&:hover': { color: '#E50914', borderColor: 'rgba(229,9,20,0.5)', bgcolor: 'rgba(229,9,20,0.08)', transform: 'scale(1.07)' }, transition: 'all 0.2s' }}>
                   {favored ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title={isPendiente ? 'Quitar de pendientes' : 'Agregar a pendientes'}>
+                <IconButton onClick={() => setStatus(pelicula, 'pendiente')} sx={{ color: isPendiente ? '#FFC107' : 'rgba(255,255,255,0.35)', border: `1px solid ${isPendiente ? 'rgba(255,193,7,0.4)' : 'rgba(255,255,255,0.12)'}`, borderRadius: '8px', p: 1.2, '&:hover': { color: '#FFC107', borderColor: 'rgba(255,193,7,0.5)', bgcolor: 'rgba(255,193,7,0.08)', transform: 'scale(1.07)' }, transition: 'all 0.2s' }}>
+                  {isPendiente ? <BookmarkAddedIcon /> : <BookmarkAddOutlinedIcon />}
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title={isVista ? 'Marcar como no vista' : 'Marcar como vista'}>
+                <IconButton onClick={() => setStatus(pelicula, 'vista')} sx={{ color: isVista ? '#4CAF50' : 'rgba(255,255,255,0.35)', border: `1px solid ${isVista ? 'rgba(76,175,80,0.4)' : 'rgba(255,255,255,0.12)'}`, borderRadius: '8px', p: 1.2, '&:hover': { color: '#4CAF50', borderColor: 'rgba(76,175,80,0.5)', bgcolor: 'rgba(76,175,80,0.08)', transform: 'scale(1.07)' }, transition: 'all 0.2s' }}>
+                  {isVista ? <CheckCircleIcon /> : <CheckCircleOutlineIcon />}
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Comparar con otra película">
+                <IconButton onClick={() => navigate('/comparar')} sx={{ color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', p: 1.2, '&:hover': { color: '#7C4DFF', borderColor: 'rgba(124,77,255,0.5)', bgcolor: 'rgba(124,77,255,0.08)', transform: 'scale(1.07)' }, transition: 'all 0.2s' }}>
+                  <CompareArrowsIcon />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Compartir">
+                <IconButton onClick={() => setOpenShare(true)} sx={{ color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', p: 1.2, '&:hover': { color: '#2196F3', borderColor: 'rgba(33,150,243,0.5)', bgcolor: 'rgba(33,150,243,0.08)', transform: 'scale(1.07)' }, transition: 'all 0.2s' }}>
+                  <IosShareIcon />
                 </IconButton>
               </Tooltip>
             </Box>
@@ -368,6 +395,12 @@ export default function DetallesPelis() {
         movieTitle={pelicula?.title}
         open={openModal}
         onClose={() => setOpenModal(false)}
+      />
+
+      <ShareCard
+        open={openShare}
+        onClose={() => setOpenShare(false)}
+        movie={pelicula}
       />
     </>
   );

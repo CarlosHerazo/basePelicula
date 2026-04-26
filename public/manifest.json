@@ -1,0 +1,22 @@
+{
+  "name": "PeliHz — Tu plataforma de cine",
+  "short_name": "PeliHz",
+  "description": "Descubre, compara y explora miles de películas con métricas reales.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0D0D0D",
+  "theme_color": "#FFC107",
+  "lang": "es",
+  "categories": ["entertainment"],
+  "icons": [
+    { "src": "/vite.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    { "name": "Métricas",   "url": "/metricas",   "description": "Ver métricas del cine" },
+    { "name": "Comparador", "url": "/comparar",   "description": "Comparar dos películas" },
+    { "name": "Ruleta",     "url": "/ruleta",     "description": "Ruleta de películas" }
+  ]
+}

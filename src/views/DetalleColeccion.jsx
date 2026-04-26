@@ -150,7 +150,7 @@ export default function DetalleColeccion() {
           {col.overview && (
             <Typography sx={{
               color: 'rgba(255,255,255,0.55)', fontSize: { xs: '0.8rem', md: '0.88rem' },
-              lineHeight: 1.6, display: { xs: 'none', sm: 'block' },
+              lineHeight: 1.6,
               display: '-webkit-box', WebkitLineClamp: 3,
               WebkitBoxOrient: 'vertical', overflow: 'hidden',
             }}>
