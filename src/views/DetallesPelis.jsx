@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box, Container, Grid, Typography, Chip, Link,
@@ -21,7 +21,6 @@ import CheckCircleIcon            from '@mui/icons-material/CheckCircle';
 import IosShareIcon               from '@mui/icons-material/IosShare';
 import CompareArrowsIcon          from '@mui/icons-material/CompareArrows';
 import MovieIcon          from '@mui/icons-material/Movie';
-import PlayArrowIcon      from '@mui/icons-material/PlayArrow';
 import LinkIcon           from '@mui/icons-material/OpenInNew';
 import FavoriteIcon       from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -59,7 +58,6 @@ export default function DetallesPelis() {
   const [error,     setError]     = useState(null);
   const [openModal,  setOpenModal]  = useState(false);
   const [openShare,  setOpenShare]  = useState(false);
-  const watchRef = useRef(null);
   const { getStatus, setStatus } = useWatchlist();
 
   useEffect(() => {
@@ -186,25 +184,6 @@ export default function DetallesPelis() {
             )}
           </Box>
 
-          {pelicula.imdb_id && (
-            <Box sx={{ mt: 2.5 }}>
-              <Button
-                onClick={() => watchRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-                variant="contained"
-                startIcon={<PlayArrowIcon sx={{ fontSize: 22 }} />}
-                sx={{
-                  bgcolor: '#FFC107', color: '#000', fontWeight: 800,
-                  fontSize: '0.95rem', px: 3.5, py: 1.2, borderRadius: '10px',
-                  textTransform: 'none', letterSpacing: '-0.2px',
-                  boxShadow: '0 4px 20px rgba(255,193,7,0.4)',
-                  '&:hover': { bgcolor: '#FFD54F', boxShadow: '0 6px 28px rgba(255,193,7,0.55)', transform: 'scale(1.03)' },
-                  transition: 'all 0.2s',
-                }}
-              >
-                Ver ahora
-              </Button>
-            </Box>
-          )}
         </Box>
       </Box>
 
@@ -406,13 +385,10 @@ export default function DetallesPelis() {
         )}
 
         {/* ── Ver película gratis ── */}
-        <Box ref={watchRef}>
-          <WatchMovie
-            movieTitle={pelicula.title}
-            year={pelicula.release_date?.slice(0, 4)}
-            imdbId={pelicula.imdb_id}
-          />
-        </Box>
+        <WatchMovie
+          movieTitle={pelicula.title}
+          year={pelicula.release_date?.slice(0, 4)}
+        />
       </Container>
 
       <TrailerModal

@@ -5,11 +5,9 @@ import PlayCircleIcon     from '@mui/icons-material/PlayCircle';
 import SearchOffIcon      from '@mui/icons-material/SearchOff';
 import OpenInNewIcon      from '@mui/icons-material/OpenInNew';
 import InfoOutlinedIcon   from '@mui/icons-material/InfoOutlined';
-import LiveTvIcon         from '@mui/icons-material/LiveTv';
 
 const FREE_PLATFORMS = (title, year) => {
-  const q   = encodeURIComponent(`${title} ${year ?? ''} pelicula completa gratis`);
-  const qEn = encodeURIComponent(`${title} ${year ?? ''} full movie free`);
+  const q = encodeURIComponent(`${title} ${year ?? ''} pelicula completa gratis`);
   return [
     { label: 'YouTube',  color: '#E53935', bg: 'rgba(229,57,53,0.08)',   url: `https://www.youtube.com/results?search_query=${q}`,              note: 'buscar' },
     { label: 'VIX',      color: '#7B2FE0', bg: 'rgba(123,47,224,0.08)',  url: `https://www.vix.com/es-419/search?q=${encodeURIComponent(title)}`, note: 'latino' },
@@ -19,42 +17,22 @@ const FREE_PLATFORMS = (title, year) => {
   ];
 };
 
-export default function WatchMovie({ movieTitle, year, imdbId }) {
-  const [archiveId,      setArchiveId]      = useState(null);
-  const [archiveFound,   setArchiveFound]   = useState(null); // null=loading, true, false
-  const [playerOpen,     setPlayerOpen]     = useState(false);
-  const [playImdbStatus, setPlayImdbStatus] = useState(null); // null=checking, true=available, false=not
-  const [playImdbOpen,   setPlayImdbOpen]   = useState(false);
-
-  useEffect(() => {
-    if (!imdbId) { setPlayImdbStatus(false); return; }
-    setPlayImdbStatus(null);
-    // Verificar si PlayIMDB tiene la película usando un img tag (evita CORS)
-    const img = new Image();
-    img.onload  = () => setPlayImdbStatus(true);
-    img.onerror = () => setPlayImdbStatus(true); // el favicon puede dar 404 pero el sitio existe
-    img.src = `https://www.playimdb.com/favicon.ico?_=${Date.now()}`;
-
-    // Intentar verificación real con no-cors fetch
-    fetch(`https://www.playimdb.com/es-es/title/${imdbId}/`, { mode: 'no-cors' })
-      .then(() => setPlayImdbStatus(true))
-      .catch(() => setPlayImdbStatus(false));
-  }, [imdbId]);
+export default function WatchMovie({ movieTitle, year }) {
+  const [archiveId,  setArchiveId]  = useState(null);
+  const [archiveFound, setArchiveFound] = useState(null);
+  const [playerOpen, setPlayerOpen] = useState(false);
 
   useEffect(() => {
     if (!movieTitle) return;
     setArchiveId(null);
     setArchiveFound(null);
     setPlayerOpen(false);
-    setPlayImdbOpen(false);
 
-    // Buscar en Archive.org sin filtro de runtime (formato inconsistente)
     const q = encodeURIComponent(`${movieTitle} AND mediatype:movies`);
     fetch(`https://archive.org/advancedsearch.php?q=${q}&fl[]=identifier&fl[]=title&fl[]=year&rows=15&output=json`)
       .then(r => r.json())
       .then(data => {
         const docs = data.response?.docs ?? [];
-        // Preferir coincidencia exacta de año
         let best = null;
         if (year && docs.length > 0) {
           best = docs.find(d => String(d.year) === String(year)) ?? docs[0];
@@ -157,75 +135,6 @@ export default function WatchMovie({ movieTitle, year, imdbId }) {
           <Typography sx={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.28)' }}>
             No disponible en Internet Archive — busca en las plataformas gratuitas de abajo
           </Typography>
-        </Box>
-      )}
-
-      {/* ── PlayIMDB ── */}
-      {imdbId && (
-        <Box sx={{ mb: 3 }}>
-          {playImdbStatus === null ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.5 }}>
-              <CircularProgress size={11} sx={{ color: 'rgba(255,193,7,0.3)' }} />
-              <Typography sx={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.25)' }}>
-                Verificando PlayIMDB…
-              </Typography>
-            </Box>
-          ) : playImdbStatus === true ? (
-            !playImdbOpen ? (
-              <Box
-                onClick={() => setPlayImdbOpen(true)}
-                sx={{
-                  display: 'flex', alignItems: 'center', gap: 2,
-                  p: 2, borderRadius: '12px', cursor: 'pointer',
-                  border: '1px solid rgba(255,193,7,0.35)',
-                  bgcolor: 'rgba(255,193,7,0.07)',
-                  transition: 'all 0.22s',
-                  '&:hover': { bgcolor: 'rgba(255,193,7,0.13)', borderColor: 'rgba(255,193,7,0.65)', transform: 'translateY(-2px)' },
-                }}
-              >
-                <LiveTvIcon sx={{ color: '#FFC107', fontSize: 30, flexShrink: 0 }} />
-                <Box sx={{ flex: 1 }}>
-                  <Typography sx={{ fontSize: '0.85rem', fontWeight: 700, color: '#FFC107', lineHeight: 1.2 }}>
-                    Ver en PlayIMDB
-                  </Typography>
-                  <Typography sx={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.38)', mt: 0.2 }}>
-                    Clic para abrir el reproductor
-                  </Typography>
-                </Box>
-              </Box>
-            ) : (
-              <Box>
-                <Box sx={{
-                  position: 'relative', paddingTop: '56.25%',
-                  borderRadius: '12px', overflow: 'hidden',
-                  bgcolor: '#000', boxShadow: '0 16px 48px rgba(0,0,0,0.6)',
-                }}>
-                  <Box
-                    component="iframe"
-                    key={imdbId}
-                    src={`https://www.playimdb.com/es-es/title/${imdbId}/`}
-                    title={movieTitle}
-                    allowFullScreen
-                    allow="fullscreen; autoplay"
-                    sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-                  />
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1, px: 0.5 }}>
-                  <Typography sx={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.2)' }}>
-                    PlayIMDB · contenido externo
-                  </Typography>
-                  <Button
-                    href={`https://www.playimdb.com/es-es/title/${imdbId}/`}
-                    target="_blank" rel="noopener noreferrer"
-                    size="small" endIcon={<OpenInNewIcon sx={{ fontSize: 11 }} />}
-                    sx={{ color: 'rgba(255,193,7,0.4)', fontSize: '0.62rem', minWidth: 0, '&:hover': { color: '#FFC107' } }}
-                  >
-                    Abrir en PlayIMDB
-                  </Button>
-                </Box>
-              </Box>
-            )
-          ) : null}
         </Box>
       )}
 

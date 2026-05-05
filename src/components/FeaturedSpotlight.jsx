@@ -1,24 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import StarIcon      from '@mui/icons-material/Star';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-
-const API_TOKEN = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68";
+import StarIcon from '@mui/icons-material/Star';
 
 export default function FeaturedSpotlight({ pelicula, etiqueta, invertir = false }) {
   const navigate = useNavigate();
-  const [imdbId, setImdbId] = useState(null);
-
-  useEffect(() => {
-    if (!pelicula?.id) return;
-    fetch(`https://api.themoviedb.org/3/movie/${pelicula.id}/external_ids`,
-      { headers: { accept: 'application/json', Authorization: API_TOKEN } })
-      .then(r => r.json())
-      .then(d => { if (d.imdb_id) setImdbId(d.imdb_id); })
-      .catch(() => {});
-  }, [pelicula?.id]);
-
   if (!pelicula) return null;
 
   return (
@@ -34,7 +20,6 @@ export default function FeaturedSpotlight({ pelicula, etiqueta, invertir = false
         '&:hover .spot-btn': { bgcolor: '#FFC107', color: '#000' },
         transition: 'box-shadow 0.3s',
         '&:hover': { boxShadow: '0 20px 60px rgba(0,0,0,0.65)' },
-        // diagonal clip on left card (default), mirror on right
         clipPath: invertir
           ? 'polygon(4% 0, 100% 0, 100% 100%, 0% 100%)'
           : 'polygon(0 0, 100% 0, 96% 100%, 0% 100%)',
@@ -53,14 +38,13 @@ export default function FeaturedSpotlight({ pelicula, etiqueta, invertir = false
         }}
       />
 
-      {/* Gradient overlay — direccional según `invertir` */}
+      {/* Gradient overlay */}
       <Box sx={{
         position: 'absolute', inset: 0,
         background: invertir
           ? 'linear-gradient(to left, rgba(0,0,0,0.92) 20%, rgba(0,0,0,0.35) 65%, transparent 100%)'
           : 'linear-gradient(to right, rgba(0,0,0,0.92) 20%, rgba(0,0,0,0.35) 65%, transparent 100%)',
       }} />
-      {/* Bottom fade */}
       <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%)' }} />
 
       {/* Content */}
@@ -72,7 +56,6 @@ export default function FeaturedSpotlight({ pelicula, etiqueta, invertir = false
         maxWidth: { xs: '80%', md: '50%' },
         zIndex: 1,
       }}>
-        {/* Label tag */}
         <Box sx={{
           display: 'inline-flex', alignItems: 'center', gap: 0.5,
           bgcolor: 'rgba(255,193,7,0.15)',
@@ -103,7 +86,7 @@ export default function FeaturedSpotlight({ pelicula, etiqueta, invertir = false
           {pelicula.overview?.slice(0, 110)}…
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: invertir ? 'flex-end' : 'flex-start', flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: invertir ? 'flex-end' : 'flex-start' }}>
           <Box sx={{
             display: 'inline-flex', alignItems: 'center', gap: 0.4,
             bgcolor: '#FFC107', color: '#000',
@@ -115,25 +98,6 @@ export default function FeaturedSpotlight({ pelicula, etiqueta, invertir = false
           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.38)' }}>
             {pelicula.release_date?.slice(0, 4)}
           </Typography>
-
-          {imdbId && (
-            <Box
-              onClick={e => { e.stopPropagation(); window.open(`https://www.playimdb.com/es-es/title/${imdbId}/`, '_blank', 'noopener,noreferrer'); }}
-              sx={{
-                display: 'inline-flex', alignItems: 'center', gap: 0.5,
-                fontSize: '0.72rem', fontWeight: 800,
-                bgcolor: '#FFC107', color: '#000',
-                px: 1.5, py: 0.35, borderRadius: '5px',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                '&:hover': { bgcolor: '#FFD54F', transform: 'scale(1.05)' },
-              }}
-            >
-              <PlayArrowIcon sx={{ fontSize: 13 }} />
-              Ver ahora
-            </Box>
-          )}
-
           <Box
             className="spot-btn"
             sx={{
