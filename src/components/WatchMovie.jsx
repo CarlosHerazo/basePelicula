@@ -12,7 +12,7 @@ const FREE_PLATFORMS = (title, year) => {
   const qEn = encodeURIComponent(`${title} ${year ?? ''} full movie free`);
   return [
     { label: 'YouTube',  color: '#E53935', bg: 'rgba(229,57,53,0.08)',   url: `https://www.youtube.com/results?search_query=${q}`,              note: 'buscar' },
-    { label: 'Tubi',     color: '#FA5A00', bg: 'rgba(250,90,0,0.08)',    url: `https://tubitv.com/search/${encodeURIComponent(title)}`,          note: 'gratis' },
+    { label: 'VIX',      color: '#7B2FE0', bg: 'rgba(123,47,224,0.08)',  url: `https://www.vix.com/es-419/search?q=${encodeURIComponent(title)}`, note: 'latino' },
     { label: 'Pluto TV', color: '#00B4D8', bg: 'rgba(0,180,216,0.08)',   url: `https://pluto.tv/search#${encodeURIComponent(title)}`,            note: 'gratis' },
     { label: 'Crackle',  color: '#FF6600', bg: 'rgba(255,102,0,0.08)',   url: `https://www.crackle.com/search?q=${encodeURIComponent(title)}`,   note: 'gratis' },
     { label: 'Plex',     color: '#E5A00D', bg: 'rgba(229,160,13,0.08)',  url: `https://watch.plex.tv/search?q=${encodeURIComponent(title)}`,     note: 'gratis' },

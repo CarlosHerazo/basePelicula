@@ -1,10 +1,24 @@
-import React from 'react';
-import { Box, Typography, Chip } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import StarIcon from '@mui/icons-material/Star';
+import StarIcon      from '@mui/icons-material/Star';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+
+const API_TOKEN = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0Yzk5ZDM4OTY5YjJjNWMyZDYxMmVjMTJjMzVjN2FiOCIsInN1YiI6IjY2NDM3M2I4Y2QxZWJjOTVjZGI5YjVlNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.ddqNN6ElsNZUfysbJqkEyIBFvecFFfuS_GaFScbq-68";
 
 export default function FeaturedSpotlight({ pelicula, etiqueta, invertir = false }) {
   const navigate = useNavigate();
+  const [imdbId, setImdbId] = useState(null);
+
+  useEffect(() => {
+    if (!pelicula?.id) return;
+    fetch(`https://api.themoviedb.org/3/movie/${pelicula.id}/external_ids`,
+      { headers: { accept: 'application/json', Authorization: API_TOKEN } })
+      .then(r => r.json())
+      .then(d => { if (d.imdb_id) setImdbId(d.imdb_id); })
+      .catch(() => {});
+  }, [pelicula?.id]);
+
   if (!pelicula) return null;
 
   return (
@@ -89,7 +103,7 @@ export default function FeaturedSpotlight({ pelicula, etiqueta, invertir = false
           {pelicula.overview?.slice(0, 110)}…
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: invertir ? 'flex-end' : 'flex-start' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: invertir ? 'flex-end' : 'flex-start', flexWrap: 'wrap' }}>
           <Box sx={{
             display: 'inline-flex', alignItems: 'center', gap: 0.4,
             bgcolor: '#FFC107', color: '#000',
@@ -101,6 +115,25 @@ export default function FeaturedSpotlight({ pelicula, etiqueta, invertir = false
           <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.38)' }}>
             {pelicula.release_date?.slice(0, 4)}
           </Typography>
+
+          {imdbId && (
+            <Box
+              onClick={e => { e.stopPropagation(); window.open(`https://www.playimdb.com/es-es/title/${imdbId}/`, '_blank', 'noopener,noreferrer'); }}
+              sx={{
+                display: 'inline-flex', alignItems: 'center', gap: 0.5,
+                fontSize: '0.72rem', fontWeight: 800,
+                bgcolor: '#FFC107', color: '#000',
+                px: 1.5, py: 0.35, borderRadius: '5px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                '&:hover': { bgcolor: '#FFD54F', transform: 'scale(1.05)' },
+              }}
+            >
+              <PlayArrowIcon sx={{ fontSize: 13 }} />
+              Ver ahora
+            </Box>
+          )}
+
           <Box
             className="spot-btn"
             sx={{
