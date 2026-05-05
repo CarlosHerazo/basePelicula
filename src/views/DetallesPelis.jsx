@@ -387,6 +387,7 @@ export default function DetallesPelis() {
         <WatchMovie
           movieTitle={pelicula.title}
           year={pelicula.release_date?.slice(0, 4)}
+          imdbId={pelicula.imdb_id}
         />
       </Container>
 
